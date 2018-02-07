@@ -18,7 +18,8 @@ The package will automatically register itself if you are using laravel.
 ## Demo
 
 ```
-<img src="/styleguide/image/100x100" alt="">
+<img src="/styleguide/image/100x100" alt="100 x 100">
+<img src="/styleguide/image/1600x500?text=Hero%20Image" alt="Hero Image">
 ```
 
 
