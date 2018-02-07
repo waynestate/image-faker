@@ -26,30 +26,38 @@ class ImageFaker
     {
         // Create the image
         $image = imagecreatetruecolor($width, $height);
-        imagesavealpha($image, true);
-        imagefill($image, 0, 0, imagecolorallocatealpha(
+        $backgroundcolor = imagecolorallocatealpha(
             $image,
             $this->config['colors']['background']['red'],
             $this->config['colors']['background']['green'],
             $this->config['colors']['background']['blue'],
             $this->config['colors']['background']['alpha']
 
-        ));
+        );
+        imagesavealpha($image, true);
+        imagefill($image, 0, 0, $backgroundcolor);
 
         // Text that overlays on the image
         $overlay = $text !== null ? $text : $width . ' x ' . $height;
 
         // Overlay the text on the image
-        $textwidth = strlen($overlay) * imagefontwidth($this->config['imagestring_font']);
+        $textwidth = strlen($overlay) * imagefontwidth($this->config['font_size']);
         $xpos = ($width - $textwidth)/2;
-        $ypos = ($height- imagefontheight($this->config['imagestring_font']))/2;
-        imagestring($image, $this->config['imagestring_font'], $xpos, $ypos, $overlay, imagecolorallocatealpha(
+        $ypos = ($height- imagefontheight($this->config['font_size']))/2;
+        $textcolor = imagecolorallocatealpha(
             $image,
             $this->config['colors']['text']['red'],
             $this->config['colors']['text']['green'],
             $this->config['colors']['text']['blue'],
             $this->config['colors']['text']['alpha']
-        ));
+        );
+
+        // Prefer the usage of true type fonts for larger font size
+        if (function_exists('imagettftext')) {
+            imagettftext($image, $this->config['font_size'], 0, $xpos, $ypos, $textcolor, __DIR__.'/font/Roboto-Regular.ttf', $overlay);
+        } else {
+            imagestring($image, $this->config['font_size'], $xpos, $ypos, $overlay, $textcolor);
+        }
 
         return $image;
     }

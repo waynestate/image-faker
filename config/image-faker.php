@@ -32,13 +32,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Imagestring Font Size
+    | Font Size
     |--------------------------------------------------------------------------
     |
-    | Font size allowed by the PHP imagestring function. Range 1-5.
+    | If GD FreeType library is available imagettftext is used to allow more
+    | variable font sizes. Otherwise it will fall back to using imagestring
+    | which allows for a range of only 1-5.
     |
     */
-    'imagestring_font' => 5,
+    'font_size' => 25,
 
     /*
     |--------------------------------------------------------------------------
