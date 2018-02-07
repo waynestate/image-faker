@@ -26,30 +26,91 @@ class ImageFaker
     {
         // Create the image
         $image = imagecreatetruecolor($width, $height);
-        imagesavealpha($image, true);
-        imagefill($image, 0, 0, imagecolorallocatealpha(
+
+        // Apply the background color
+        $backgroundcolor = imagecolorallocatealpha(
             $image,
             $this->config['colors']['background']['red'],
             $this->config['colors']['background']['green'],
             $this->config['colors']['background']['blue'],
             $this->config['colors']['background']['alpha']
+        );
+        imagesavealpha($image, true);
+        imagefill($image, 0, 0, $backgroundcolor);
 
-        ));
-
-        // Text that overlays on the image
-        $overlay = $text !== null ? $text : $width . ' x ' . $height;
-
-        // Overlay the text on the image
-        $textwidth = strlen($overlay) * imagefontwidth($this->config['imagestring_font']);
-        $xpos = ($width - $textwidth)/2;
-        $ypos = ($height- imagefontheight($this->config['imagestring_font']))/2;
-        imagestring($image, $this->config['imagestring_font'], $xpos, $ypos, $overlay, imagecolorallocatealpha(
+        // Image text Color
+        $textcolor = imagecolorallocatealpha(
             $image,
             $this->config['colors']['text']['red'],
             $this->config['colors']['text']['green'],
             $this->config['colors']['text']['blue'],
             $this->config['colors']['text']['alpha']
-        ));
+        );
+
+        // Image overlay text
+        $overlay = $text !== null ? $text : $width . ' x ' . $height;
+
+        // Prefer the usage of true type fonts for larger font size
+        if (function_exists('imagettftext')) {
+            return $this->createFromTrueType($image, $width, $height, $textcolor, $overlay);
+        } else {
+            return $this->createFromString($image, $width, $height, $textcolor, $overlay);
+        }
+    }
+
+    /**
+     * Create an image using imagettftext.
+     *
+     * @param gd resource $image
+     * @param int $width
+     * @param int $height
+     * @param int $textcolor
+     * @param string $overlay
+     * @return gd resource
+     */
+    public function createFromTrueType($image, $width, $height, $textcolor, $overlay)
+    {
+        // Localize the font size since we will be changing it to auto fit
+        $fontsize = $this->config['font_size'];
+
+        // Calculate the font size based on the image size
+        $box = imagettfbbox($fontsize, 0, $this->config['font'], $overlay);
+
+        // Decrease the default font size until it fits
+        while (((($width - ($box[2] - $box[0])) < 10) || (($height - ($box[1] - $box[7])) < 10)) && ($fontsize > 1)) {
+            $fontsize--;
+            $box = imagettfbbox($fontsize, 0, $this->config['font'], $overlay);
+        }
+
+        // Once it fits scale the font size down so we have some padding
+        if($fontsize < $this->config['font_size']) {
+            $fontsize = $fontsize * .60;
+            $box = imagettfbbox($fontsize, 0, $this->config['font'], $overlay);
+        }
+
+        imagettftext($image, $fontsize, 0, ($width / 2) - (($box[2] - $box[0]) / 2), ($height / 2) + (($box[1] - $box[7]) / 2), $textcolor, $this->config['font'], $overlay);
+
+        return $image;
+    }
+
+    /**
+     * Create an image using imagestring.
+     *
+     * @param gd resource $image
+     * @param int $width
+     * @param int $height
+     * @param int $textcolor
+     * @param string $overlay
+     * @return gd resource
+     */
+    public function createFromString($image, $width, $height, $textcolor, $overlay)
+    {
+        // Get the positions to center the text
+        $textwidth = strlen($overlay) * imagefontwidth($this->config['font_size']);
+        $xpos = ($width - $textwidth)/2;
+        $ypos = ($height- imagefontheight($this->config['font_size']))/2;
+
+        imagestring($image, $this->config['font_size'], $xpos, $ypos, $overlay, $textcolor);
 
         return $image;
     }
@@ -94,6 +155,10 @@ class ImageFaker
         $parsed_host = parse_url($host);
         $parsed_referer = parse_url($referer);
 
-        return $this->config['enable_hotlinking'] || $parsed_referer['path'] === '' || isset($parsed_referer['host']) && $parsed_host['host'] === $parsed_referer['host'];
+        if ($this->config['enable_hotlinking']) {
+            return true;
+        }
+
+        return $parsed_referer['path'] === '' || isset($parsed_referer['host']) && $parsed_host['host'] === $parsed_referer['host'];
     }
 }

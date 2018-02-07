@@ -28,17 +28,32 @@ return [
     | Hotlinking
     |--------------------------------------------------------------------------
     */
-    'enable_hotlinking' => true,
+    'enable_hotlinking' => false,
 
     /*
     |--------------------------------------------------------------------------
-    | Imagestring Font Size
+    | Font Size
     |--------------------------------------------------------------------------
     |
-    | Font size allowed by the PHP imagestring function. Range 1-5.
+    | If GD FreeType library is available imagettftext is used to allow more
+    | variable font sizes. The font size is automatically adjusted to fit
+    | the size of the image. This value is the largest the size can be.
+    | If FreeType is unvailable it will fall back to imagestring
+    | which allows for a range of only 1-5.
     |
     */
-    'imagestring_font' => 5,
+    'font_size' => 75,
+
+    /*
+    |--------------------------------------------------------------------------
+    | True Type Font Path
+    |--------------------------------------------------------------------------
+    |
+    | This package ships using Roboto-Regular. If you would like to supply
+    | your own true type font you can provide that path here.
+    |
+    */
+    'font' => __DIR__.'/../src/font/Roboto-Regular.ttf',
 
     /*
     |--------------------------------------------------------------------------

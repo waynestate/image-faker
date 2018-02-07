@@ -54,7 +54,7 @@ class ImageFakerTest extends TestCase
     * @covers Styleguide\Repositories\FakeImageRepository::create
     * @test
     */
-    public function creating_image_should()
+    public function creating_image_should_have_proper_dimensions()
     {
         $width = 100;
         $height = 50;
@@ -75,12 +75,18 @@ class ImageFakerTest extends TestCase
         $allow = $this->image->onSameHost('https://base.wayne.edu/', 'https://base.wayne.edu/page/');
         $this->assertTrue($allow);
 
-        // Different domain
+        // Unknown referer (when viewing the image directly)
+        $allow = $this->image->onSameHost('https://base.wayne.edu/', '');
+        $this->assertTrue($allow);
+
+        // Different domain disallowing hotlinking
+        $this->image->config['enable_hotlinking'] = false;
         $allow = $this->image->onSameHost('https://base.wayne.edu/', 'https://other.wayne.edu/');
         $this->assertFalse($allow);
 
-        // Unknown referer (when viewing the image directly)
-        $allow = $this->image->onSameHost('https://base.wayne.edu/', '');
+        // Different domain but allow hotlinking
+        $this->image->config['enable_hotlinking'] = true;
+        $allow = $this->image->onSameHost('https://base.wayne.edu/', 'https://other.wayne.edu/');
         $this->assertTrue($allow);
     }
 }
