@@ -1,5 +1,6 @@
 {
     "name": "waynestate/image-faker",
+    "version": "1.0.0",
     "description": "Fake image generator using the PHP GD library. Accessible through a Laravel route.",
     "license": "MIT",
     "authors": [
