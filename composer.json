@@ -1,0 +1,34 @@
+{
+    "name": "waynestate/image-faker",
+    "version": "1.0.0",
+    "description": "Fake image generator using the PHP GD library. Accessible through a Laravel route.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Web Communications",
+            "email": "web@wayne.edu"
+        }
+    ],
+    "require": {
+        "php": ">=7.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.2",
+        "phpunit/phpunit": "~6.0"
+    },
+    "autoload": {
+        "psr-4":{
+            "Waynestate\\ImageFaker\\":"src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Waynestate\\ImageFaker\\ImageFakerServiceProvider"
+            ],
+            "aliases": {
+                "ImageFaker": "Waynestate\\ImageFaker\\ImageFakerFacade"
+            }
+        }
+    }
+}
