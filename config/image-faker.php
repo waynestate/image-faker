@@ -65,16 +65,16 @@ return [
     */
     'colors' => [
         'background' => [
-            'red' => 180,
-            'green' => 180,
-            'blue' => 180,
+            'red' => 217,
+            'green' => 217,
+            'blue' => 217,
             'alpha' => 0,
         ],
         'text' => [
-            'red' => 255,
-            'green' => 255,
-            'blue' => 255,
-            'alpha' => 50,
+            'red' => 0,
+            'green' => 0,
+            'blue' => 0,
+            'alpha' => 0,
         ],
     ],
 ];
