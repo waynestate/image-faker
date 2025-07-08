@@ -36,10 +36,14 @@ class ImageFakerController extends Controller
 
         $image = $this->image->create($dimensions['width'], $dimensions['height'], $request->text);
 
-        header("Content-Type: image/png");
+        ob_start();
         imagepng($image);
+        $image_data = ob_get_contents();
         imagedestroy($image);
-
-        return response(200);
+        ob_end_clean();
+        
+        return response($image_data, 200, [
+            'Content-Type' => 'image/png'
+        ]);
     }
 }
